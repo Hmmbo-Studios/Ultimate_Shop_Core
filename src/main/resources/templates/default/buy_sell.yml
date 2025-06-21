@@ -54,6 +54,12 @@ items:
     item:
       type: EMERALD
       display_name: "&aBuy Stack"
+  - slot: 28
+    type: ACTION
+    action: change_mode
+    item:
+      type: LEVER
+      display_name: "&eChange Mode"
   - slot: 32
     type: ACTION
     action: sell_stack

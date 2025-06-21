@@ -43,14 +43,33 @@ public class ShopMenuListener implements Listener {
                     String folder = template.getName().split("/")[0];
                     ShopTemplate buySell = ShopTemplateManager.get().getTemplate(folder, "buy_sell");
                     if (buySell != null) {
-                        BuySellInventory holder = new BuySellInventory(buySell, new ShopTemplateItemStack(event.getCurrentItem().clone(), ShopTemplateItemStack.Type.SHOP_ITEM, 0, null, null, ShopTemplateItemStack.extractBuyPrice(event.getCurrentItem()), ShopTemplateItemStack.extractSellPrice(event.getCurrentItem())), template);
+                        BuySellInventory holder = new BuySellInventory(
+                                buySell,
+                                new ShopTemplateItemStack(event.getCurrentItem().clone(), ShopTemplateItemStack.Type.SHOP_ITEM, 0, null, null,
+                                        ShopTemplateItemStack.extractBuyPrice(event.getCurrentItem()),
+                                        ShopTemplateItemStack.extractSellPrice(event.getCurrentItem())),
+                                template);
                         Inventory newInv = buySell.createInventory(holder, event.getCurrentItem().clone());
                         for (ShopTemplateItemStack it : buySell.getItems()) {
                             if (it.getType() == ShopTemplateItemStack.Type.SELECTED_ITEM) {
                                 holder.setDisplaySlot(it.getIndex());
                                 newInv.setItem(it.getIndex(), event.getCurrentItem().clone());
-                                break;
                             }
+                            if (it.getType() == ShopTemplateItemStack.Type.ACTION) {
+                                String a = it.getAction();
+                                if (a == null) continue;
+                                switch (a.toLowerCase()) {
+                                    case "buy" -> { holder.setBuySlot(it.getIndex()); holder.setBuyItem(it); }
+                                    case "sell" -> { holder.setSellSlot(it.getIndex()); holder.setSellItem(it); }
+                                    case "buy_stack" -> { holder.setBuyStackSlot(it.getIndex()); holder.setBuyStackItem(it); }
+                                    case "sell_stack" -> { holder.setSellStackSlot(it.getIndex()); holder.setSellStackItem(it); }
+                                    case "change_mode" -> { holder.setToggleMode(true); holder.setChangeModeSlot(it.getIndex()); }
+                                }
+                            }
+                        }
+                        if (holder.hasToggleMode()) {
+                            if (holder.getBuyStackSlot() >= 0) newInv.setItem(holder.getBuyStackSlot(), null);
+                            if (holder.getSellStackSlot() >= 0) newInv.setItem(holder.getSellStackSlot(), null);
                         }
                         event.getWhoClicked().openInventory(newInv);
                     }
@@ -94,6 +113,7 @@ public class ShopMenuListener implements Listener {
             case "buy" -> processBuy(player, holder, holder.getAmount());
             case "sell" -> processSell(player, holder, holder.getAmount());
             case "input" -> openAnvil(player, holder, inv);
+            case "change_mode" -> toggleMode(holder, inv);
             default -> {}
         }
     }
@@ -109,6 +129,22 @@ public class ShopMenuListener implements Listener {
         int amt = Math.min(64, holder.getAmount());
         stack.setAmount(amt);
         inv.setItem(holder.getDisplaySlot(), stack);
+    }
+
+    private void toggleMode(BuySellInventory holder, Inventory inv) {
+        if (!holder.hasToggleMode()) return;
+        holder.setStackMode(!holder.isStackMode());
+        if (holder.isStackMode()) {
+            if (holder.getBuySlot() >= 0 && holder.getBuyStackItem() != null)
+                inv.setItem(holder.getBuySlot(), holder.getBuyStackItem().getItemStack());
+            if (holder.getSellSlot() >= 0 && holder.getSellStackItem() != null)
+                inv.setItem(holder.getSellSlot(), holder.getSellStackItem().getItemStack());
+        } else {
+            if (holder.getBuySlot() >= 0 && holder.getBuyItem() != null)
+                inv.setItem(holder.getBuySlot(), holder.getBuyItem().getItemStack());
+            if (holder.getSellSlot() >= 0 && holder.getSellItem() != null)
+                inv.setItem(holder.getSellSlot(), holder.getSellItem().getItemStack());
+        }
     }
 
     private void processBuy(Player player, BuySellInventory holder, int amount) {
