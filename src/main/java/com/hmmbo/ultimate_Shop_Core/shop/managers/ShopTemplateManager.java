@@ -72,12 +72,12 @@ public class ShopTemplateManager {
             for (String keyItem : config.getConfigurationSection("items").getKeys(false)) {
                 String rootPath = "items." + keyItem;
 
-                String typeStr = config.getString(rootPath + ".type", "DECORATION");
+                String itemTypeStr = config.getString(rootPath + ".type", "DECORATION");
                 ShopTemplateItemStack.Type type;
                 try {
-                    type = ShopTemplateItemStack.Type.valueOf(typeStr.toUpperCase());
+                    type = ShopTemplateItemStack.Type.valueOf(itemTypeStr.toUpperCase());
                 } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("Invalid type in " + fileName + ": " + typeStr);
+                    plugin.getLogger().warning("Invalid type in " + fileName + ": " + itemTypeStr);
                     continue;
                 }
 
