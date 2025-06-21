@@ -25,7 +25,7 @@ public class ShopCommand {
         }
     }
 
-    @Subcommand("admin change_template <name>")
+    @Command("shop admin change_template")
     @CommandPermission("usc.admin")
     public void changeTemplate(BukkitCommandActor sender, String name) {
         Ultimate_Shop_Core.instance.getConfig().set("shop_template", name);

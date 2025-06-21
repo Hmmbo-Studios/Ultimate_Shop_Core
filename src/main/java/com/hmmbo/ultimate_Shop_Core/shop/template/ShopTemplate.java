@@ -12,6 +12,7 @@ public class ShopTemplate {
 
     private final int rows;
     private final String name;
+    private final String inventoryName;
     private final List<ShopTemplateItemStack> items;
     public enum Type {
         GUI_SHOP,
@@ -28,9 +29,10 @@ public class ShopTemplate {
 
     }
 
-    public ShopTemplate(int rows, String name,Type type ) {
+    public ShopTemplate(int rows, String name, String inventoryName, Type type) {
         this.rows = rows;
         this.name = name;
+        this.inventoryName = inventoryName;
         items = new ArrayList<>();
     }
 
@@ -44,7 +46,8 @@ public class ShopTemplate {
 
     public Inventory createInventory() {
         int size = rows * 9;
-        Inventory inventory = Bukkit.createInventory(new Custom_Inventory(this),size,name);
+        String title = inventoryName != null ? inventoryName : name;
+        Inventory inventory = Bukkit.createInventory(new Custom_Inventory(this), size, title);
         for (ShopTemplateItemStack templateItem : items) {
             int index = templateItem.getIndex();
             ItemStack stack = templateItem.getItemStack();
@@ -63,5 +66,9 @@ public class ShopTemplate {
 
     public String getName() {
         return name;
+    }
+
+    public String getInventoryName() {
+        return inventoryName;
     }
 }

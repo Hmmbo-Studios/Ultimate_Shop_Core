@@ -1,5 +1,6 @@
 rows: 5
 type: "SHOP"
+inventory_name: "Food"
 items:
   - slot: 10-12
     type: SHOP_ITEM
