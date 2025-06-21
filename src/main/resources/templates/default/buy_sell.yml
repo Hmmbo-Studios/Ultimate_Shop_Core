@@ -1,0 +1,67 @@
+rows: 3
+inventory_name: "Buy & Sell"
+items:
+  - slot: 10
+    type: ACTION
+    action: add1
+    item:
+      type: STONE_BUTTON
+      display_name: "&aAdd 1"
+  - slot: 11
+    type: ACTION
+    action: add16
+    item:
+      type: STONE_BUTTON
+      display_name: "&aAdd 16"
+  - slot: 12
+    type: ACTION
+    action: add32
+    item:
+      type: STONE_BUTTON
+      display_name: "&aAdd 32"
+  - slot: 13
+    type: ACTION
+    action: add64
+    item:
+      type: STONE_BUTTON
+      display_name: "&aAdd 64"
+  - slot: 20
+    type: ACTION
+    action: buy
+    item:
+      type: EMERALD_BLOCK
+      display_name: "&aBuy"
+  - slot: 24
+    type: ACTION
+    action: sell
+    item:
+      type: REDSTONE_BLOCK
+      display_name: "&cSell"
+  - slot: 22
+    type: SELECTED_ITEM
+    item:
+      type: DIAMOND
+      display_name: "&fItem"
+  - slot: 31
+    type: ACTION
+    action: input
+    item:
+      type: PAPER
+      display_name: "&eEnter Amount"
+  - slot: 30
+    type: ACTION
+    action: buy_stack
+    item:
+      type: EMERALD
+      display_name: "&aBuy Stack"
+  - slot: 32
+    type: ACTION
+    action: sell_stack
+    item:
+      type: REDSTONE
+      display_name: "&cSell Stack"
+  - slot: 26
+    type: BACK
+    item:
+      type: ARROW
+      display_name: "&aBack"

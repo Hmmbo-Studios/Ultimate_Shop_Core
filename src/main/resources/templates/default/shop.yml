@@ -1,20 +1,14 @@
 rows: 5
-type: "SHOP"
 inventory_name: "Shop"
 items:
-  - slot: 10
-    category: "food"
+  - slot: 11
     type: CATEGORY
+    category: "categories/ores"
     item:
-      type: APPLE
-      display_name: "§aFood Category"
-  - slot: [19, "20-22", 25]
-    type: DECORATION
-    item:
-      type: GRAY_STAINED_GLASS_PANE
-      display_name: "§r"
+      type: IRON_ORE
+      display_name: "&7Ores"
   - slot: 45
     type: CLOSE
     item:
       type: BARRIER
-      display_name: "§cClose"
+      display_name: "&cClose"

@@ -101,11 +101,22 @@ public class ShopTemplateManager {
                         Object catObj = map.get("category");
                         if (catObj != null) category = catObj.toString();
                     }
+                    String action = null;
+                    if (type == ShopTemplateItemStack.Type.ACTION) {
+                        Object actObj = map.get("action");
+                        if (actObj != null) action = actObj.toString();
+                    }
+                    double buyPrice = 0;
+                    double sellPrice = 0;
+                    if (type == ShopTemplateItemStack.Type.SHOP_ITEM) {
+                        buyPrice = getDouble(map, "buy_price");
+                        sellPrice = getDouble(map, "sell_price");
+                    }
 
                     List<Range> ranges = Range.parseFromObject(map.get("slot"));
                     for (Range range : ranges) {
                         for (int i = range.getStart(); i <= range.getEnd(); i++) {
-                            template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category));
+                            template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category, action, buyPrice, sellPrice));
                         }
                     }
                 }
@@ -136,11 +147,21 @@ public class ShopTemplateManager {
                 if (type == ShopTemplateItemStack.Type.CATEGORY) {
                     category = config.getString(rootPath + ".category");
                 }
+                String action = null;
+                if (type == ShopTemplateItemStack.Type.ACTION) {
+                    action = config.getString(rootPath + ".action");
+                }
+                double buyPrice = 0;
+                double sellPrice = 0;
+                if (type == ShopTemplateItemStack.Type.SHOP_ITEM) {
+                    buyPrice = config.getDouble(rootPath + ".buy_price", 0);
+                    sellPrice = config.getDouble(rootPath + ".sell_price", 0);
+                }
 
                 List<Range> ranges = Range.parseFromYaml(config, rootPath + ".slot");
                 for (Range range : ranges) {
                     for (int i = range.getStart(); i <= range.getEnd(); i++) {
-                        template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category));
+                        template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category, action, buyPrice, sellPrice));
                     }
                 }
             }
@@ -148,6 +169,16 @@ public class ShopTemplateManager {
 
         cache.put(key, template);
         return template;
+    }
+
+    private double getDouble(Map<?, ?> map, String key) {
+        Object val = map.get(key);
+        if (val == null) return 0;
+        try {
+            return Double.parseDouble(val.toString());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
 

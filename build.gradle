@@ -32,6 +32,7 @@ dependencies {
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.12'
     // Use latest AnvilGUI version compatible with MC 1.17+
     implementation 'net.wesjd:anvilgui:1.10.5-SNAPSHOT'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 }
 
 def targetJavaVersion = 17
