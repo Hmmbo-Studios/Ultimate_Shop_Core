@@ -51,7 +51,7 @@ public class ShopCommand {
     @Command("shop")
     public void onBasedCommand(BukkitCommandActor sender, String name) {
             Ultimate_Shop_Core.instance.getLogger().info(ShopTemplateManager.cache.toString());
-        sender.asPlayer().openInventory(ShopTemplateManager.cache.get(name).createInventory());
+        sender.asPlayer().openInventory(ShopTemplateManager.get().getTemplate(name, "shop").createInventory());
     }
 
         @Subcommand("buy")

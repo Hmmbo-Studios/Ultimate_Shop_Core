@@ -9,10 +9,12 @@ import org.bukkit.persistence.PersistentDataType;
 public class ShopTemplateItemStack {
 
     private static final NamespacedKey TYPE_KEY = new NamespacedKey("ultimate_shop_core", "template_type");
+    private static final NamespacedKey CATEGORY_KEY = new NamespacedKey("ultimate_shop_core", "template_category");
 
     private ItemStack itemStack;
     private Type type;
     private int index;
+    private String category;
 
     public enum Type {
         DECORATION,
@@ -20,7 +22,8 @@ public class ShopTemplateItemStack {
         PREV,
         CLOSE,
         BACK,
-        SHOP_ITEM;
+        SHOP_ITEM,
+        CATEGORY;
 
         public static Type fromString(String s) {
             try {
@@ -32,18 +35,26 @@ public class ShopTemplateItemStack {
     }
 
     public ShopTemplateItemStack(ItemStack itemStack, Type type, int index) {
+        this(itemStack, type, index, null);
+    }
+
+    public ShopTemplateItemStack(ItemStack itemStack, Type type, int index, String category) {
         this.itemStack = itemStack;
         this.type = type;
         this.index = index;
-        storeTypeInItem(itemStack, type);
+        this.category = category;
+        storeTypeAndCategory(itemStack, type, category);
     }
 
-    private void storeTypeInItem(ItemStack item, Type type) {
+    private void storeTypeAndCategory(ItemStack item, Type type, String category) {
         if (item == null || type == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
 
         meta.getPersistentDataContainer().set(TYPE_KEY, PersistentDataType.STRING, type.name());
+        if (category != null) {
+            meta.getPersistentDataContainer().set(CATEGORY_KEY, PersistentDataType.STRING, category);
+        }
         item.setItemMeta(meta);
     }
 
@@ -59,13 +70,24 @@ public class ShopTemplateItemStack {
         return null;
     }
 
+    public static String extractCategory(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (container.has(CATEGORY_KEY, PersistentDataType.STRING)) {
+            return container.get(CATEGORY_KEY, PersistentDataType.STRING);
+        }
+        return null;
+    }
+
     public ItemStack getItemStack() {
         return itemStack;
     }
 
     public void setItemStack(ItemStack itemStack) {
         this.itemStack = itemStack;
-        storeTypeInItem(itemStack, this.type); // re-store type
+        storeTypeAndCategory(itemStack, this.type, this.category); // re-store data
     }
 
     public Type getType() {
@@ -74,7 +96,7 @@ public class ShopTemplateItemStack {
 
     public void setType(Type type) {
         this.type = type;
-        storeTypeInItem(this.itemStack, type); // re-store type
+        storeTypeAndCategory(this.itemStack, type, this.category); // re-store data
     }
 
     public int getIndex() {
@@ -83,5 +105,14 @@ public class ShopTemplateItemStack {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+        storeTypeAndCategory(this.itemStack, this.type, category);
     }
 }

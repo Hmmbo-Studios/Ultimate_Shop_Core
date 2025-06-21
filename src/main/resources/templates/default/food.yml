@@ -2,7 +2,6 @@ rows: 5
 type: "SHOP"
 items:
   - slot: 10-12
-    category: "Food"
     type: SHOP_ITEM
     item:
       ==: org.bukkit.inventory.ItemStack
@@ -14,7 +13,6 @@ items:
         display-name: "§bBuy Diamond"
         lore:
           - "§7Precious gem"
-
   - slot: [19, "20-22", 25]
     type: DECORATION
     item:
@@ -25,14 +23,13 @@ items:
         ==: ItemMeta
         meta-type: UNSPECIFIC
         display-name: "§r"
-
   - slot: 45
-    type: CLOSE
+    type: BACK
     item:
       ==: org.bukkit.inventory.ItemStack
       v: 2868
-      type: BARRIER
+      type: ARROW
       meta:
         ==: ItemMeta
         meta-type: UNSPECIFIC
-        display-name: "§cClose"
+        display-name: "§aBack"
