@@ -40,20 +40,28 @@ public class Range {
     // ✅ Generic parser from YAML path (no hardcoding key/attr)
     public static List<Range> parseFromYaml(YamlConfiguration yml, String path) {
         Object value = yml.get(path);
+        return parseFromObject(value);
+    }
+
+    /**
+     * Parse slot ranges from an arbitrary object. Supported types are Integer,
+     * String (range syntax), or a List containing those types.
+     */
+    public static List<Range> parseFromObject(Object value) {
         List<Range> ranges = new ArrayList<>();
 
         if (value == null) return ranges;
 
-        if (value instanceof Integer) {
-            ranges.add(new Range((Integer) value));
-        } else if (value instanceof String) {
-            ranges.addAll(parseRangeString((String) value));
-        } else if (value instanceof List) {
-            for (Object item : (List<?>) value) {
-                if (item instanceof Integer) {
-                    ranges.add(new Range((Integer) item));
-                } else if (item instanceof String) {
-                    ranges.addAll(parseRangeString((String) item));
+        if (value instanceof Integer i) {
+            ranges.add(new Range(i));
+        } else if (value instanceof String s) {
+            ranges.addAll(parseRangeString(s));
+        } else if (value instanceof List<?> list) {
+            for (Object item : list) {
+                if (item instanceof Integer j) {
+                    ranges.add(new Range(j));
+                } else if (item instanceof String str) {
+                    ranges.addAll(parseRangeString(str));
                 }
             }
         }

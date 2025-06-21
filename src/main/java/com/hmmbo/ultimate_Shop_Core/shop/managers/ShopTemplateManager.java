@@ -69,7 +69,46 @@ public class ShopTemplateManager {
         }
         ShopTemplate template = new ShopTemplate(rows, key, inventoryName, guiType);
 
-        if (config.isConfigurationSection("items")) {
+        if (config.isList("items")) {
+            List<?> itemList = config.getList("items");
+            if (itemList != null) {
+                for (int idx = 0; idx < itemList.size(); idx++) {
+                    Object raw = itemList.get(idx);
+                    if (!(raw instanceof Map<?, ?> map)) continue;
+
+                    String itemTypeStr = map.getOrDefault("type", "DECORATION").toString();
+                    ShopTemplateItemStack.Type type;
+                    try {
+                        type = ShopTemplateItemStack.Type.valueOf(itemTypeStr.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        plugin.getLogger().warning("Invalid type in " + fileName + ": " + itemTypeStr);
+                        continue;
+                    }
+
+                    ItemStack itemStack;
+                    try {
+                        itemStack = (ItemStack) map.get("item");
+                        if (itemStack == null) throw new IllegalArgumentException("ItemStack is null");
+                    } catch (Exception e) {
+                        plugin.getLogger().warning("Missing or invalid item in " + fileName + ": " + e.getMessage());
+                        continue;
+                    }
+
+                    String category = null;
+                    if (type == ShopTemplateItemStack.Type.CATEGORY) {
+                        Object catObj = map.get("category");
+                        if (catObj != null) category = catObj.toString();
+                    }
+
+                    List<Range> ranges = Range.parseFromObject(map.get("slot"));
+                    for (Range range : ranges) {
+                        for (int i = range.getStart(); i <= range.getEnd(); i++) {
+                            template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category));
+                        }
+                    }
+                }
+            }
+        } else if (config.isConfigurationSection("items")) {
             for (String keyItem : config.getConfigurationSection("items").getKeys(false)) {
                 String rootPath = "items." + keyItem;
 
