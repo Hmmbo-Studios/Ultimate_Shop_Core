@@ -4,6 +4,7 @@ import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.datatypes.Range;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplateItemStack;
+import com.hmmbo.ultimate_Shop_Core.utils.ItemUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,7 +77,8 @@ public class ShopTemplateManager {
                     Object raw = itemList.get(idx);
                     if (!(raw instanceof Map<?, ?> map)) continue;
 
-                    String itemTypeStr = map.getOrDefault("type", "DECORATION").toString();
+                    Object typeObj = map.get("type");
+                    String itemTypeStr = typeObj == null ? "DECORATION" : typeObj.toString();
                     ShopTemplateItemStack.Type type;
                     try {
                         type = ShopTemplateItemStack.Type.valueOf(itemTypeStr.toUpperCase());
@@ -87,7 +89,7 @@ public class ShopTemplateManager {
 
                     ItemStack itemStack;
                     try {
-                        itemStack = (ItemStack) map.get("item");
+                        itemStack = ItemUtil.parseItem(map.get("item"));
                         if (itemStack == null) throw new IllegalArgumentException("ItemStack is null");
                     } catch (Exception e) {
                         plugin.getLogger().warning("Missing or invalid item in " + fileName + ": " + e.getMessage());
@@ -123,7 +125,7 @@ public class ShopTemplateManager {
 
                 ItemStack itemStack;
                 try {
-                    itemStack = config.getItemStack(rootPath + ".item");
+                    itemStack = ItemUtil.parseItem(config.get(rootPath + ".item"));
                     if (itemStack == null) throw new IllegalArgumentException("ItemStack is null");
                 } catch (Exception e) {
                     plugin.getLogger().warning("Missing or invalid item in " + fileName + ": " + e.getMessage());

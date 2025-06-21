@@ -6,30 +6,15 @@ items:
     category: "food"
     type: CATEGORY
     item:
-      ==: org.bukkit.inventory.ItemStack
-      v: 2868
       type: APPLE
-      meta:
-        ==: ItemMeta
-        meta-type: UNSPECIFIC
-        display-name: "§aFood Category"
+      display_name: "§aFood Category"
   - slot: [19, "20-22", 25]
     type: DECORATION
     item:
-      ==: org.bukkit.inventory.ItemStack
-      v: 2868
       type: GRAY_STAINED_GLASS_PANE
-      meta:
-        ==: ItemMeta
-        meta-type: UNSPECIFIC
-        display-name: "§r"
+      display_name: "§r"
   - slot: 45
     type: CLOSE
     item:
-      ==: org.bukkit.inventory.ItemStack
-      v: 2868
       type: BARRIER
-      meta:
-        ==: ItemMeta
-        meta-type: UNSPECIFIC
-        display-name: "§cClose"
+      display_name: "§cClose"
