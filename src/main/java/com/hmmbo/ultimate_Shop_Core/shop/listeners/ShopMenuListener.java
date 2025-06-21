@@ -14,19 +14,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 public class ShopMenuListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Inventory inv = event.getInventory();
+        InventoryView view = event.getView();
+        Inventory top = view.getTopInventory();
+        Inventory clicked = event.getClickedInventory();
 
-        if (inv.getHolder() instanceof Custom_Inventory shopHolder) {
+        if (top.getHolder() instanceof Custom_Inventory shopHolder) {
             ShopTemplate template = shopHolder.getTemplate();
             ShopTemplateItemStack.Type type = ShopTemplateItemStack.extractType(event.getCurrentItem());
             event.setCancelled(true);
-
+            
             if (type == null) return;
 
             switch (type) {
@@ -85,14 +89,14 @@ public class ShopMenuListener implements Listener {
                 default -> {
                 }
             }
-        } else if (inv.getHolder() instanceof BuySellInventory buySellHolder) {
+        } else if (top.getHolder() instanceof BuySellInventory buySellHolder) {
             event.setCancelled(true);
             ShopTemplateItemStack.Type type = ShopTemplateItemStack.extractType(event.getCurrentItem());
             String action = ShopTemplateItemStack.extractAction(event.getCurrentItem());
             if (type == null) return;
             Player player = (Player) event.getWhoClicked();
             switch (type) {
-                case ACTION -> handleAction(player, buySellHolder, action, inv);
+                case ACTION -> handleAction(player, buySellHolder, action, top);
                 case BACK -> player.openInventory(buySellHolder.getParentTemplate().createInventory());
                 case CLOSE -> player.closeInventory();
                 default -> {
@@ -199,5 +203,14 @@ public class ShopMenuListener implements Listener {
                 .title("Enter Amount")
                 .plugin(com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core.instance)
                 .open(player);
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        InventoryView view = event.getView();
+        Inventory top = view.getTopInventory();
+        if (top.getHolder() instanceof Custom_Inventory || top.getHolder() instanceof BuySellInventory) {
+            event.setCancelled(true);
+        }
     }
 }

@@ -7,6 +7,7 @@ import org.bukkit.inventory.InventoryHolder;
 public class Custom_Inventory implements InventoryHolder {
 
     private final ShopTemplate template;
+    private Inventory inventory;
 
     public Custom_Inventory(ShopTemplate template) {
         this.template = template;
@@ -14,7 +15,10 @@ public class Custom_Inventory implements InventoryHolder {
 
     @Override
     public Inventory getInventory() {
-        return template.createInventory(); // optional
+        if (inventory == null) {
+            inventory = template.createInventory(this);
+        }
+        return inventory;
     }
 
     public ShopTemplate getTemplate() {

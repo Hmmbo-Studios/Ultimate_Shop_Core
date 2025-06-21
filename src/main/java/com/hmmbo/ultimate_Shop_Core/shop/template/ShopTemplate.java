@@ -46,7 +46,8 @@ public class ShopTemplate {
     }
 
     public Inventory createInventory() {
-        return createInventory(new Custom_Inventory(this), null);
+        Custom_Inventory holder = new Custom_Inventory(this);
+        return holder.getInventory();
     }
 
     public Inventory createInventory(InventoryHolder holder) {

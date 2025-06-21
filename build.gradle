@@ -24,6 +24,9 @@ repositories {
     maven {
         url = "https://repo.codemc.io/repository/maven-snapshots/"
     }
+    maven {
+        url = "https://jitpack.io"
+    }
 }
 
 dependencies {
