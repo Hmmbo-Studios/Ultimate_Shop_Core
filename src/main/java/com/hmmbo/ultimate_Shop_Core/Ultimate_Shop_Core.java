@@ -18,6 +18,9 @@ public final class Ultimate_Shop_Core extends JavaPlugin {
     public void onEnable() {
         instance = this;
         // Plugin startup logic
+        saveDefaultConfig();
+        saveResource("templates/default/shop.yml", false);
+        saveResource("templates/default/food.yml", false);
         Lamp<BukkitCommandActor> lamp = BukkitLamp.builder(this).build();
         lamp.register(new ShopCommand());
 

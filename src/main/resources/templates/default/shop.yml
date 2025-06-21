@@ -1,0 +1,20 @@
+rows: 5
+type: "SHOP"
+inventory_name: "Shop"
+items:
+  - slot: 10
+    category: "food"
+    type: CATEGORY
+    item:
+      type: APPLE
+      display_name: "§aFood Category"
+  - slot: [19, "20-22", 25]
+    type: DECORATION
+    item:
+      type: GRAY_STAINED_GLASS_PANE
+      display_name: "§r"
+  - slot: 45
+    type: CLOSE
+    item:
+      type: BARRIER
+      display_name: "§cClose"
