@@ -60,8 +60,13 @@ public class ShopTemplateManager {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         int rows = config.getInt("rows", 4);
-        ShopTemplate.Type gui_type = ShopTemplate.Type.valueOf(config.getString("type", "GUI_SHOP"));
-        ShopTemplate template = new ShopTemplate(rows, key, gui_type);
+        String typeStr = config.getString("type", "GUI_SHOP");
+        ShopTemplate.Type guiType = ShopTemplate.Type.fromString(typeStr);
+        if (guiType == null) {
+            plugin.getLogger().warning("Unknown shop type '" + typeStr + "' in " + file.getName() + ", defaulting to GUI_SHOP");
+            guiType = ShopTemplate.Type.GUI_SHOP;
+        }
+        ShopTemplate template = new ShopTemplate(rows, key, guiType);
 
         if (config.isConfigurationSection("items")) {
             for (String keyItem : config.getConfigurationSection("items").getKeys(false)) {
