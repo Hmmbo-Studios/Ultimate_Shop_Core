@@ -1,0 +1,15 @@
+rows: 3
+inventory_name: "Ores"
+items:
+  - slot: 10
+    type: SHOP_ITEM
+    buy_price: 100
+    sell_price: 50
+    item:
+      type: DIAMOND
+      display_name: "&bDiamond"
+  - slot: 26
+    type: BACK
+    item:
+      type: ARROW
+      display_name: "&aBack"

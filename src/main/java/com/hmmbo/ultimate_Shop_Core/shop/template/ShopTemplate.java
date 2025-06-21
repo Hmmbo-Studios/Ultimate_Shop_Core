@@ -3,6 +3,7 @@ package com.hmmbo.ultimate_Shop_Core.shop.template;
 import com.hmmbo.ultimate_Shop_Core.datatypes.Custom_Inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -45,12 +46,25 @@ public class ShopTemplate {
     }
 
     public Inventory createInventory() {
+        Custom_Inventory holder = new Custom_Inventory(this);
+        return holder.getInventory();
+    }
+
+    public Inventory createInventory(InventoryHolder holder) {
+        return createInventory(holder, null);
+    }
+
+    public Inventory createInventory(InventoryHolder holder, ItemStack displayItem) {
         int size = rows * 9;
         String title = inventoryName != null ? inventoryName : name;
-        Inventory inventory = Bukkit.createInventory(new Custom_Inventory(this), size, title);
+        Inventory inventory = Bukkit.createInventory(holder, size, title);
         for (ShopTemplateItemStack templateItem : items) {
             int index = templateItem.getIndex();
             ItemStack stack = templateItem.getItemStack();
+
+            if (templateItem.getType() == ShopTemplateItemStack.Type.SELECTED_ITEM && displayItem != null) {
+                stack = displayItem;
+            }
 
             if (index >= 0 && index < size) {
                 inventory.setItem(index, stack);
