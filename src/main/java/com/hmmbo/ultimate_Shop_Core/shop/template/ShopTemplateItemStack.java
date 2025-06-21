@@ -1,0 +1,87 @@
+package com.hmmbo.ultimate_Shop_Core.shop.template;
+
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+
+public class ShopTemplateItemStack {
+
+    private static final NamespacedKey TYPE_KEY = new NamespacedKey("ultimate_shop_core", "template_type");
+
+    private ItemStack itemStack;
+    private Type type;
+    private int index;
+
+    public enum Type {
+        DECORATION,
+        NEXT,
+        PREV,
+        CLOSE,
+        BACK,
+        SHOP_ITEM;
+
+        public static Type fromString(String s) {
+            try {
+                return Type.valueOf(s.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    public ShopTemplateItemStack(ItemStack itemStack, Type type, int index) {
+        this.itemStack = itemStack;
+        this.type = type;
+        this.index = index;
+        storeTypeInItem(itemStack, type);
+    }
+
+    private void storeTypeInItem(ItemStack item, Type type) {
+        if (item == null || type == null) return;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
+
+        meta.getPersistentDataContainer().set(TYPE_KEY, PersistentDataType.STRING, type.name());
+        item.setItemMeta(meta);
+    }
+
+    public static Type extractType(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (container.has(TYPE_KEY, PersistentDataType.STRING)) {
+            String typeStr = container.get(TYPE_KEY, PersistentDataType.STRING);
+            return Type.fromString(typeStr);
+        }
+        return null;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    public void setItemStack(ItemStack itemStack) {
+        this.itemStack = itemStack;
+        storeTypeInItem(itemStack, this.type); // re-store type
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+        storeTypeInItem(this.itemStack, type); // re-store type
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+}

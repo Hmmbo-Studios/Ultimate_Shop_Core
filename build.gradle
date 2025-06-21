@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
-    id("com.github.johnrengelman.shadow") version "8.1.1" // <- Shadow plugin
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = 'com.hmmbo'
@@ -17,42 +17,59 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        name = "sonatype-snapshots"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url = "https://repo.codemc.io/repository/maven-snapshots/"
+    }
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
     implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.12'
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.12'
+    // Use latest AnvilGUI version compatible with MC 1.17+
+    implementation 'net.wesjd:anvilgui:1.10.5-SNAPSHOT'
 }
 
-tasks {
-    runServer {
-        minecraftVersion("1.16.5")
-    }
+def targetJavaVersion = 17
 
-    shadowJar {
-        archiveClassifier.set("") // Makes the shaded jar be the main output (no -all suffix)
-        relocate "io.github.revxrsal.lamp", "com.hmmbo.shaded.lamp" // Optional: Prevents class conflicts
-    }
-
-    build {
-        dependsOn(shadowJar)
-    }
-}
-
-def targetJavaVersion = 16
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
+    sourceCompatibility = targetJavaVersion
+    targetCompatibility = targetJavaVersion
     if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release.set(targetJavaVersion)
+    if (targetJavaVersion >= 11 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+tasks {
+    runServer {
+        minecraftVersion("1.17")
+    }
+
+    shadowJar {
+        archiveClassifier = ""
+        // Relocate only Lamp
+        relocate "io.github.revxrsal.lamp", "com.hmmbo.shaded.lamp"
+
+        // EXCLUDE AnvilGUI from the final shaded jar
+        dependencies {
+            exclude(dependency("net.wesjd:anvilgui"))
+        }
+    }
+
+
+    build {
+        dependsOn(shadowJar)
     }
 }
