@@ -11,6 +11,7 @@ public class Custom_Inventory implements InventoryHolder {
     private final double buyPrice;
     private final double sellPrice;
     private int amount = 1;
+    private boolean stackMode = false;
 
     public Custom_Inventory(ShopTemplate template) {
         this(template, null, 0, 0);
@@ -58,5 +59,18 @@ public class Custom_Inventory implements InventoryHolder {
 
     public void setAmount(int amount) {
         this.amount = Math.max(1, amount);
+    }
+
+    public boolean isStackMode() {
+        return stackMode;
+    }
+
+    public void setStackMode(boolean stackMode) {
+        this.stackMode = stackMode;
+    }
+
+    public boolean toggleStackMode() {
+        this.stackMode = !this.stackMode;
+        return this.stackMode;
     }
 }

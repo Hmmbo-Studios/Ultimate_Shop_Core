@@ -7,7 +7,7 @@ public class BuySellItemStack extends ShopTemplateItemStack {
         ADD1,
         ADD16,
         ADD32,
-        ADD64,
+        ADD_STACK,
         BUY,
         SELL,
         BUY_STACK,

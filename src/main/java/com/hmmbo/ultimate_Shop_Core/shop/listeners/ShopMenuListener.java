@@ -6,6 +6,7 @@ import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplateItemStack;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
 import com.hmmbo.ultimate_Shop_Core.utils.sign.SignInput;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -49,13 +50,25 @@ public class ShopMenuListener implements Listener {
                     String folder = template.getName().split("/")[0];
                     ShopTemplate bs = ShopTemplateManager.get().getTemplate(folder, "buy_sell");
                     if (bs != null) {
-                        player.openInventory(bs.createInventory(clicked, buy, sell));
+                        Inventory newInv = bs.createInventory(clicked, buy, sell);
+                        Custom_Inventory newHolder = (Custom_Inventory) newInv.getHolder();
+                        applyMode(newInv, newHolder.isStackMode(), bs.hasChangeMode());
+                        player.openInventory(newInv);
                     }
                 }
-                case ADD1 -> shopHolder.addAmount(1);
-                case ADD16 -> shopHolder.addAmount(16);
-                case ADD32 -> shopHolder.addAmount(32);
-                case ADD64 -> shopHolder.addAmount(64);
+                case ADD1 -> shopHolder.addAmount(shopHolder.isStackMode() ? 64 : 1);
+                case ADD16 -> shopHolder.addAmount(shopHolder.isStackMode() ? 128 : 16);
+                case ADD32 -> shopHolder.addAmount(shopHolder.isStackMode() ? 256 : 32);
+                case ADD_STACK -> shopHolder.addAmount(64);
+                case CHANGE_MODE -> {
+                    boolean mode = shopHolder.toggleStackMode();
+                    Inventory newInv = template.createInventory(shopHolder.getDynamicItem(), shopHolder.getBuyPrice(), shopHolder.getSellPrice());
+                    Custom_Inventory newHolder = (Custom_Inventory) newInv.getHolder();
+                    newHolder.setAmount(shopHolder.getAmount());
+                    newHolder.setStackMode(mode);
+                    applyMode(newInv, mode, template.hasChangeMode());
+                    player.openInventory(newInv);
+                }
                 case INPUT -> {
                     SignInput.open(player, lines -> {
                         if (lines.length == 0) return;
@@ -133,6 +146,51 @@ public class ShopMenuListener implements Listener {
                 }
                 case CLOSE -> player.closeInventory();
                 default -> {
+                }
+            }
+        }
+    }
+
+    private void applyMode(Inventory inv, boolean stackMode, boolean hasToggle) {
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            if (item == null) continue;
+            ShopTemplateItemStack.Type t = ShopTemplateItemStack.extractType(item);
+            if (t == null) continue;
+
+            String name = null;
+            if (stackMode) {
+                switch (t) {
+                    case ADD1 -> name = ChatColor.GREEN + "Add Stack";
+                    case ADD16 -> name = ChatColor.GREEN + "Add Stack x2";
+                    case ADD32 -> name = ChatColor.GREEN + "Add Stack x4";
+                    case ADD_STACK -> name = ChatColor.GREEN + "Add Stack";
+                    default -> {}
+                }
+            } else {
+                switch (t) {
+                    case ADD1 -> name = ChatColor.GREEN + "Add 1";
+                    case ADD16 -> name = ChatColor.GREEN + "Add 16";
+                    case ADD32 -> name = ChatColor.GREEN + "Add 32";
+                    case ADD_STACK -> name = ChatColor.GREEN + "Add Stack";
+                    default -> {}
+                }
+            }
+            if (name != null) {
+                var meta = item.getItemMeta();
+                if (meta != null) {
+                    meta.setDisplayName(name);
+                    item.setItemMeta(meta);
+                }
+                inv.setItem(i, item);
+            }
+
+            if (t == ShopTemplateItemStack.Type.CHANGE_MODE && hasToggle) {
+                var meta = item.getItemMeta();
+                if (meta != null) {
+                    meta.setDisplayName(stackMode ? ChatColor.YELLOW + "Items" : ChatColor.YELLOW + "Stacks");
+                    item.setItemMeta(meta);
+                    inv.setItem(i, item);
                 }
             }
         }

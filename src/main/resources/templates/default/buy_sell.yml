@@ -17,10 +17,10 @@ items:
       type: GREEN_WOOL
       display_name: "&aAdd 32"
   - slot: 14
-    type: ADD64
+    type: ADD_STACK
     item:
       type: GREEN_WOOL
-      display_name: "&aAdd 64"
+      display_name: "&aAdd Stack"
   - slot: 20
     type: BUY_STACK
     item:
