@@ -1,0 +1,15 @@
+rows: 5
+inventory_name: "Blocks"
+items:
+  - slot: 10
+    type: SHOP_ITEM
+    item:
+      type: STONE
+      display_name: "&7Stone"
+    buy_price: 1
+    sell_price: 0.5
+  - slot: 19
+    type: BACK
+    item:
+      type: ARROW
+      display_name: "&aBack"

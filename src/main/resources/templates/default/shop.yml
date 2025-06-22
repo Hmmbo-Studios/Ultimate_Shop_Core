@@ -3,11 +3,17 @@ type: "SHOP"
 inventory_name: "Shop"
 items:
   - slot: 10
-    category: "food"
+    category: "categories/ores"
     type: CATEGORY
     item:
-      type: APPLE
-      display_name: "§aFood Category"
+      type: DIAMOND_ORE
+      display_name: "§bOres"
+  - slot: 11
+    category: "categories/blocks"
+    type: CATEGORY
+    item:
+      type: STONE
+      display_name: "§7Blocks"
   - slot: [19, "20-22", 25]
     type: DECORATION
     item:

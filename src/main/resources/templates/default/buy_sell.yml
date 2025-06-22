@@ -1,0 +1,58 @@
+rows: 3
+inventory_name: "Buy & Sell"
+items:
+  - slot: 10
+    type: ADD1
+    item:
+      type: GREEN_WOOL
+      display_name: "&aAdd 1"
+  - slot: 11
+    type: ADD16
+    item:
+      type: GREEN_WOOL
+      display_name: "&aAdd 16"
+  - slot: 12
+    type: ADD32
+    item:
+      type: GREEN_WOOL
+      display_name: "&aAdd 32"
+  - slot: 14
+    type: ADD64
+    item:
+      type: GREEN_WOOL
+      display_name: "&aAdd 64"
+  - slot: 20
+    type: BUY_STACK
+    item:
+      type: EMERALD
+      display_name: "&aBuy Stack"
+  - slot: 21
+    type: SELL_STACK
+    item:
+      type: REDSTONE
+      display_name: "&cSell Stack"
+  - slot: 22
+    type: INPUT
+    item:
+      type: PAPER
+      display_name: "&eEnter Amount"
+  - slot: 15
+    type: BUY
+    item:
+      type: EMERALD_BLOCK
+      display_name: "&aBuy"
+  - slot: 16
+    type: SELL
+    item:
+      type: REDSTONE_BLOCK
+      display_name: "&cSell"
+  - slot: 13
+    type: SHOP_ITEM
+    item:
+      type: STONE
+      display_name: "&fItem"
+  - slot: 26
+    type: CLOSE
+    item:
+      type: BARRIER
+      display_name: "&cClose"

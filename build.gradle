@@ -24,14 +24,16 @@ repositories {
     maven {
         url = "https://repo.codemc.io/repository/maven-snapshots/"
     }
+    maven { url "https://repo.dmulloy2.net/repository/public/" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.12'
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.12'
-    // Use latest AnvilGUI version compatible with MC 1.17+
-    implementation 'net.wesjd:anvilgui:1.10.5-SNAPSHOT'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
 }
 
 def targetJavaVersion = 17
@@ -62,10 +64,7 @@ tasks {
         // Relocate only Lamp
         relocate "io.github.revxrsal.lamp", "com.hmmbo.shaded.lamp"
 
-        // EXCLUDE AnvilGUI from the final shaded jar
-        dependencies {
-            exclude(dependency("net.wesjd:anvilgui"))
-        }
+        // No special dependency relocations
     }
 
 
