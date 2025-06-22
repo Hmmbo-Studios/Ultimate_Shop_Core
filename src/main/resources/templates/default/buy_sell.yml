@@ -21,6 +21,21 @@ items:
     item:
       type: GREEN_WOOL
       display_name: "&aAdd 64"
+  - slot: 20
+    type: BUY_STACK
+    item:
+      type: EMERALD
+      display_name: "&aBuy Stack"
+  - slot: 21
+    type: SELL_STACK
+    item:
+      type: REDSTONE
+      display_name: "&cSell Stack"
+  - slot: 22
+    type: INPUT
+    item:
+      type: PAPER
+      display_name: "&eEnter Amount"
   - slot: 15
     type: BUY
     item:
@@ -36,7 +51,7 @@ items:
     item:
       type: STONE
       display_name: "&fItem"
-  - slot: 22
+  - slot: 26
     type: CLOSE
     item:
       type: BARRIER

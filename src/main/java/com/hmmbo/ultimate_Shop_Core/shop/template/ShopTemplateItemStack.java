@@ -8,6 +8,11 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class ShopTemplateItemStack {
 
+    /**
+     * Namespaced keys used for storing template data on an {@link ItemStack}.
+     * Using literal namespaces keeps the items valid even before the plugin is
+     * fully initialised.
+     */
     private static final NamespacedKey TYPE_KEY = new NamespacedKey("ultimate_shop_core", "template_type");
     private static final NamespacedKey CATEGORY_KEY = new NamespacedKey("ultimate_shop_core", "template_category");
     private static final NamespacedKey BUY_PRICE_KEY = new NamespacedKey("ultimate_shop_core", "buy_price");

@@ -20,6 +20,10 @@ public class ShopMenuListener implements Listener {
         Inventory inv = event.getInventory();
 
         if (inv.getHolder() instanceof Custom_Inventory shopHolder) {
+            if (event.getCurrentItem() == null) {
+                event.setCancelled(true);
+                return;
+            }
             ShopTemplate template = shopHolder.getTemplate();
             ShopTemplateItemStack.Type type = ShopTemplateItemStack.extractType(event.getCurrentItem());
             event.setCancelled(true);
@@ -48,9 +52,7 @@ public class ShopMenuListener implements Listener {
                         player.openInventory(bs.createInventory(clicked, buy, sell));
                     }
                 }
-                case ADD1 -> {
-                    shopHolder.addAmount(1);
-                }
+                case ADD1 -> shopHolder.addAmount(1);
                 case ADD16 -> shopHolder.addAmount(16);
                 case ADD32 -> shopHolder.addAmount(32);
                 case ADD64 -> shopHolder.addAmount(64);
@@ -86,16 +88,45 @@ public class ShopMenuListener implements Listener {
                         }
                     }
                 }
+                case BUY_STACK -> {
+                    if (Ultimate_Shop_Core.economy != null) {
+                        int amt = 64;
+                        double cost = shopHolder.getBuyPrice() * amt;
+                        if (Ultimate_Shop_Core.economy.getBalance(player) >= cost) {
+                            Ultimate_Shop_Core.economy.withdrawPlayer(player, cost);
+                            ItemStack item = shopHolder.getDynamicItem().clone();
+                            item.setAmount(amt);
+                            player.getInventory().addItem(item);
+                            player.sendMessage("You bought " + amt + " " + item.getType() + " for $" + cost);
+                        } else {
+                            player.sendMessage("Not enough money!");
+                        }
+                    }
+                }
                 case SELL -> {
-                    ItemStack item = shopHolder.getDynamicItem().clone();
-                    item.setAmount(shopHolder.getAmount());
-                    if (player.getInventory().containsAtLeast(item, shopHolder.getAmount())) {
-                        player.getInventory().removeItem(item);
-                        double gain = shopHolder.getSellPrice() * shopHolder.getAmount();
+                    int amt = shopHolder.getAmount();
+                    ItemStack check = new ItemStack(shopHolder.getDynamicItem().getType(), amt);
+                    if (player.getInventory().containsAtLeast(check, amt)) {
+                        player.getInventory().removeItem(check);
+                        double gain = shopHolder.getSellPrice() * amt;
                         if (Ultimate_Shop_Core.economy != null) {
                             Ultimate_Shop_Core.economy.depositPlayer(player, gain);
                         }
-                        player.sendMessage("You sold " + shopHolder.getAmount() + " " + item.getType() + " for $" + gain);
+                        player.sendMessage("You sold " + amt + " " + check.getType() + " for $" + gain);
+                    } else {
+                        player.sendMessage("You don't have enough items!");
+                    }
+                }
+                case SELL_STACK -> {
+                    int amt = 64;
+                    ItemStack check = new ItemStack(shopHolder.getDynamicItem().getType(), amt);
+                    if (player.getInventory().containsAtLeast(check, amt)) {
+                        player.getInventory().removeItem(check);
+                        double gain = shopHolder.getSellPrice() * amt;
+                        if (Ultimate_Shop_Core.economy != null) {
+                            Ultimate_Shop_Core.economy.depositPlayer(player, gain);
+                        }
+                        player.sendMessage("You sold " + amt + " " + check.getType() + " for $" + gain);
                     } else {
                         player.sendMessage("You don't have enough items!");
                     }
