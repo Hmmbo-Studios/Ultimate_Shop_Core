@@ -5,7 +5,7 @@ import com.hmmbo.ultimate_Shop_Core.datatypes.Custom_Inventory;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplateItemStack;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
-import net.wesjd.anvilgui.AnvilGUI;
+import com.hmmbo.ultimate_Shop_Core.utils.sign.SignInput;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -57,22 +57,15 @@ public class ShopMenuListener implements Listener {
                 case ADD32 -> shopHolder.addAmount(32);
                 case ADD64 -> shopHolder.addAmount(64);
                 case INPUT -> {
-                    new AnvilGUI.Builder()
-                            .onClick((slot, state) -> {
-                                if (slot != AnvilGUI.Slot.OUTPUT) return java.util.Collections.emptyList();
-                                try {
-                                    int amt = Integer.parseInt(state.getText());
-                                    shopHolder.setAmount(amt);
-                                } catch (NumberFormatException ignored) {
-                                    player.sendMessage("Invalid amount");
-                                }
-                                return java.util.List.of(AnvilGUI.ResponseAction.close());
-                            })
-                            .onClose(state -> player.sendMessage("Closed Inventory"))
-                            .text("5-10 or 8")
-                            .title("Enter Amount")
-                            .plugin(Ultimate_Shop_Core.instance)
-                            .open(player);
+                    SignInput.open(player, lines -> {
+                        if (lines.length == 0) return;
+                        try {
+                            int amt = Integer.parseInt(lines[0]);
+                            shopHolder.setAmount(amt);
+                        } catch (NumberFormatException ignored) {
+                            player.sendMessage("Invalid amount");
+                        }
+                    });
                 }
                 case BUY -> {
                     if (Ultimate_Shop_Core.economy != null) {

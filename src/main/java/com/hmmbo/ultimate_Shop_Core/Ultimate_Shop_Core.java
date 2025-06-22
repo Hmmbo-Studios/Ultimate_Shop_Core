@@ -3,6 +3,7 @@ package com.hmmbo.ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.shop.listeners.ShopMenuListener;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
 import com.hmmbo.ultimate_Shop_Core.utils.commands.ShopCommand;
+import com.hmmbo.ultimate_Shop_Core.utils.sign.SignInput;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -35,6 +36,7 @@ public final class Ultimate_Shop_Core extends JavaPlugin {
 
         //Managers
         new ShopTemplateManager(this);
+        SignInput.init(this);
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new ShopMenuListener(), this);
