@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.wrappers.BlockPosition;
 import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,7 +57,7 @@ public class SignInput {
         }
         Location loc = player.getLocation();
         loc = new Location(player.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        BlockVector pos = new BlockVector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        BlockPosition pos = new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         BlockData data = Material.OAK_SIGN.createBlockData();
         player.sendBlockChange(loc, data);
 
