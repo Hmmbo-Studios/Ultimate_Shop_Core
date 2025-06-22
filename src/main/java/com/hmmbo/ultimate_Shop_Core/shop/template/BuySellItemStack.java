@@ -5,9 +5,13 @@ import org.bukkit.inventory.ItemStack;
 public class BuySellItemStack extends ShopTemplateItemStack {
     public enum BuySellType {
         ADD1,
+        ADD8,
         ADD16,
         ADD32,
-        ADD_STACK,
+        ADD1_STACK,
+        ADD8_STACK,
+        ADD16_STACK,
+        ADD32_STACK,
         BUY,
         SELL,
         BUY_STACK,

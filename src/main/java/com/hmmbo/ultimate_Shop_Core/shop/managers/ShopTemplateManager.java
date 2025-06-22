@@ -85,7 +85,8 @@ public class ShopTemplateManager {
                     if (!(raw instanceof Map<?, ?> map)) continue;
 
                     Object typeObj = map.get("type");
-                    String itemTypeStr = typeObj == null ? "DECORATION" : typeObj.toString();
+                    boolean typeSpecified = typeObj != null;
+                    String itemTypeStr = typeSpecified ? typeObj.toString() : "DECORATION";
 
                     ItemStack itemStack;
                     try {
@@ -108,7 +109,7 @@ public class ShopTemplateManager {
                     List<Range> ranges = Range.parseFromObject(map.get("slot"));
                     for (Range range : ranges) {
                         for (int i = range.getStart(); i <= range.getEnd(); i++) {
-                            template.addItem(createItem(template, itemTypeStr, itemStack.clone(), i, category, buyPrice, sellPrice));
+                            template.addItem(createItem(template, itemTypeStr, typeSpecified, itemStack.clone(), i, category, buyPrice, sellPrice));
                         }
                     }
                 }
@@ -117,7 +118,8 @@ public class ShopTemplateManager {
             for (String keyItem : config.getConfigurationSection("items").getKeys(false)) {
                 String rootPath = "items." + keyItem;
 
-                String itemTypeStr = config.getString(rootPath + ".type", "DECORATION");
+                boolean typeSpecified = config.contains(rootPath + ".type");
+                String itemTypeStr = typeSpecified ? config.getString(rootPath + ".type") : "DECORATION";
 
                 ItemStack itemStack;
                 try {
@@ -139,7 +141,7 @@ public class ShopTemplateManager {
                 List<Range> ranges = Range.parseFromYaml(config, rootPath + ".slot");
                 for (Range range : ranges) {
                     for (int i = range.getStart(); i <= range.getEnd(); i++) {
-                        template.addItem(createItem(template, itemTypeStr, itemStack.clone(), i, category, buyPrice, sellPrice));
+                        template.addItem(createItem(template, itemTypeStr, typeSpecified, itemStack.clone(), i, category, buyPrice, sellPrice));
                     }
                 }
             }
@@ -149,11 +151,13 @@ public class ShopTemplateManager {
         return template;
     }
 
-    private ShopTemplateItemStack createItem(ShopTemplate template, String typeName, ItemStack stack, int index, String category, double buy, double sell) {
+    private ShopTemplateItemStack createItem(ShopTemplate template, String typeName, boolean typeSpecified, ItemStack stack, int index, String category, double buy, double sell) {
         try {
             if (template instanceof BuySellTemplate) {
                 BuySellItemStack.BuySellType t = BuySellItemStack.BuySellType.valueOf(typeName.toUpperCase());
-                return new BuySellItemStack(stack, t, index, buy, sell);
+                BuySellItemStack item = new BuySellItemStack(stack, t, index, buy, sell);
+                if (!typeSpecified) item.setDynamicItem(true);
+                return item;
             } else if (template instanceof CategoryTemplate) {
                 CategoryItemStack.CategoryType t = CategoryItemStack.CategoryType.valueOf(typeName.toUpperCase());
                 return new CategoryItemStack(stack, t, index, buy, sell);
@@ -163,7 +167,9 @@ public class ShopTemplateManager {
             }
         } catch (IllegalArgumentException ex) {
             plugin.getLogger().warning("Unknown item type '" + typeName + "' in template " + template.getName());
-            return new ShopTemplateItemStack(stack, ShopTemplateItemStack.Type.DECORATION, index, category, buy, sell);
+            ShopTemplateItemStack item = new ShopTemplateItemStack(stack, ShopTemplateItemStack.Type.DECORATION, index, category, buy, sell);
+            if (template instanceof BuySellTemplate && !typeSpecified) item.setDynamicItem(true);
+            return item;
         }
     }
 

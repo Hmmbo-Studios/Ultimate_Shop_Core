@@ -56,10 +56,14 @@ public class ShopMenuListener implements Listener {
                         player.openInventory(newInv);
                     }
                 }
-                case ADD1 -> shopHolder.addAmount(shopHolder.isStackMode() ? 64 : 1);
-                case ADD16 -> shopHolder.addAmount(shopHolder.isStackMode() ? 128 : 16);
-                case ADD32 -> shopHolder.addAmount(shopHolder.isStackMode() ? 256 : 32);
-                case ADD_STACK -> shopHolder.addAmount(64);
+                case ADD1 -> shopHolder.addAmount(1);
+                case ADD8 -> shopHolder.addAmount(8);
+                case ADD16 -> shopHolder.addAmount(16);
+                case ADD32 -> shopHolder.addAmount(32);
+                case ADD1_STACK -> shopHolder.addAmount(64);
+                case ADD8_STACK -> shopHolder.addAmount(8 * 64);
+                case ADD16_STACK -> shopHolder.addAmount(16 * 64);
+                case ADD32_STACK -> shopHolder.addAmount(32 * 64);
                 case CHANGE_MODE -> {
                     boolean mode = shopHolder.toggleStackMode();
                     Inventory newInv = template.createInventory(shopHolder.getDynamicItem(), shopHolder.getBuyPrice(), shopHolder.getSellPrice());
@@ -157,25 +161,46 @@ public class ShopMenuListener implements Listener {
             if (item == null) continue;
             ShopTemplateItemStack.Type t = ShopTemplateItemStack.extractType(item);
             if (t == null) continue;
-
+            boolean show = true;
             String name = null;
-            if (stackMode) {
-                switch (t) {
-                    case ADD1 -> name = ChatColor.GREEN + "Add Stack";
-                    case ADD16 -> name = ChatColor.GREEN + "Add Stack x2";
-                    case ADD32 -> name = ChatColor.GREEN + "Add Stack x4";
-                    case ADD_STACK -> name = ChatColor.GREEN + "Add Stack";
-                    default -> {}
+            switch (t) {
+                case ADD1 -> name = ChatColor.GREEN + "Add 1";
+                case ADD8 -> name = ChatColor.GREEN + "Add 8";
+                case ADD16 -> name = ChatColor.GREEN + "Add 16";
+                case ADD32 -> name = ChatColor.GREEN + "Add 32";
+                case ADD1_STACK -> {
+                    name = ChatColor.GREEN + "Add 1 Stack";
+                    if (hasToggle && !stackMode) show = false;
                 }
-            } else {
+                case ADD8_STACK -> {
+                    name = ChatColor.GREEN + "Add 8 Stacks";
+                    if (hasToggle && !stackMode) show = false;
+                }
+                case ADD16_STACK -> {
+                    name = ChatColor.GREEN + "Add 16 Stacks";
+                    if (hasToggle && !stackMode) show = false;
+                }
+                case ADD32_STACK -> {
+                    name = ChatColor.GREEN + "Add 32 Stacks";
+                    if (hasToggle && !stackMode) show = false;
+                }
+                default -> {}
+            }
+
+            if (hasToggle) {
                 switch (t) {
-                    case ADD1 -> name = ChatColor.GREEN + "Add 1";
-                    case ADD16 -> name = ChatColor.GREEN + "Add 16";
-                    case ADD32 -> name = ChatColor.GREEN + "Add 32";
-                    case ADD_STACK -> name = ChatColor.GREEN + "Add Stack";
+                    case ADD1, ADD8, ADD16, ADD32 -> {
+                        if (stackMode) show = false;
+                    }
                     default -> {}
                 }
             }
+
+            if (!show) {
+                inv.setItem(i, null);
+                continue;
+            }
+
             if (name != null) {
                 var meta = item.getItemMeta();
                 if (meta != null) {

@@ -75,7 +75,7 @@ public class ShopTemplate {
         for (ShopTemplateItemStack templateItem : items) {
             int index = templateItem.getIndex();
             ItemStack stack = templateItem.getItemStack();
-            if (templateItem.getType() == ShopTemplateItemStack.Type.SHOP_ITEM && dynamicItem != null) {
+            if (dynamicItem != null && (templateItem.getType() == ShopTemplateItemStack.Type.SHOP_ITEM || templateItem.isDynamicItem())) {
                 stack = dynamicItem.clone();
             }
             if (index >= 0 && index < size) {
