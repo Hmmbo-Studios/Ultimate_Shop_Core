@@ -153,16 +153,17 @@ public class ShopTemplateManager {
 
     private ShopTemplateItemStack createItem(ShopTemplate template, String typeName, boolean typeSpecified, ItemStack stack, int index, String category, double buy, double sell) {
         try {
+            String normalized = typeName.toUpperCase().replace(' ', '_');
             if (template instanceof BuySellTemplate) {
-                BuySellItemStack.BuySellType t = BuySellItemStack.BuySellType.valueOf(typeName.toUpperCase());
+                BuySellItemStack.BuySellType t = BuySellItemStack.BuySellType.valueOf(normalized);
                 BuySellItemStack item = new BuySellItemStack(stack, t, index, buy, sell);
                 if (!typeSpecified) item.setDynamicItem(true);
                 return item;
             } else if (template instanceof CategoryTemplate) {
-                CategoryItemStack.CategoryType t = CategoryItemStack.CategoryType.valueOf(typeName.toUpperCase());
+                CategoryItemStack.CategoryType t = CategoryItemStack.CategoryType.valueOf(normalized);
                 return new CategoryItemStack(stack, t, index, buy, sell);
             } else {
-                ShopMenuItemStack.MenuType t = ShopMenuItemStack.MenuType.valueOf(typeName.toUpperCase());
+                ShopMenuItemStack.MenuType t = ShopMenuItemStack.MenuType.valueOf(normalized);
                 return new ShopMenuItemStack(stack, t, index, category);
             }
         } catch (IllegalArgumentException ex) {

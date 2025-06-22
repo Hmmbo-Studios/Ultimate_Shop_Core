@@ -1,6 +1,26 @@
 rows: 3
 inventory_name: "Buy & Sell"
 items:
+  - slot: 0
+    type: REMOVE1
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 1"
+  - slot: 1
+    type: REMOVE8
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 8"
+  - slot: 2
+    type: REMOVE16
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 16"
+  - slot: 3
+    type: REMOVE32
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 32"
   - slot: 9
     type: ADD1
     item:
@@ -41,6 +61,26 @@ items:
     item:
       type: GREEN_WOOL
       display_name: "&aAdd 32 Stacks"
+  - slot: 5
+    type: REMOVE1_STACK
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 1 Stack"
+  - slot: 6
+    type: REMOVE8_STACK
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 8 Stacks"
+  - slot: 7
+    type: REMOVE16_STACK
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 16 Stacks"
+  - slot: 8
+    type: REMOVE32_STACK
+    item:
+      type: RED_WOOL
+      display_name: "&cRemove 32 Stacks"
   - slot: 20
     type: INPUT
     item:
@@ -57,6 +97,7 @@ items:
       type: REDSTONE_BLOCK
       display_name: "&cSell"
   - slot: 13
+    type: SHOP_ITEM
     item:
       type: STONE
       display_name: "&fItem"
