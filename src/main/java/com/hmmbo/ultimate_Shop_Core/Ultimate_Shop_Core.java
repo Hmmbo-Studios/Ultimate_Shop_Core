@@ -3,6 +3,7 @@ package com.hmmbo.ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.shop.listeners.ShopMenuListener;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
 import com.hmmbo.ultimate_Shop_Core.utils.commands.ShopCommand;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +14,7 @@ import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 public final class Ultimate_Shop_Core extends JavaPlugin {
 
     public static Plugin instance;
+    public static Economy economy;
 
     @Override
     public void onEnable() {
@@ -20,9 +22,15 @@ public final class Ultimate_Shop_Core extends JavaPlugin {
         // Plugin startup logic
         saveDefaultConfig();
         saveResource("templates/default/shop.yml", false);
-        saveResource("templates/default/food.yml", false);
+        saveResource("templates/default/buy_sell.yml", false);
+        saveResource("templates/default/categories/ores.yml", false);
+        saveResource("templates/default/categories/blocks.yml", false);
         Lamp<BukkitCommandActor> lamp = BukkitLamp.builder(this).build();
         lamp.register(new ShopCommand());
+
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+        }
 
 
         //Managers

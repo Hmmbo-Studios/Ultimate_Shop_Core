@@ -60,6 +60,23 @@ public class ShopTemplate {
         return inventory;
     }
 
+    public Inventory createInventory(ItemStack dynamicItem, double buyPrice, double sellPrice) {
+        int size = rows * 9;
+        String title = inventoryName != null ? inventoryName : name;
+        Inventory inventory = Bukkit.createInventory(new Custom_Inventory(this, dynamicItem, buyPrice, sellPrice), size, title);
+        for (ShopTemplateItemStack templateItem : items) {
+            int index = templateItem.getIndex();
+            ItemStack stack = templateItem.getItemStack();
+            if (templateItem.getType() == ShopTemplateItemStack.Type.SHOP_ITEM && dynamicItem != null) {
+                stack = dynamicItem.clone();
+            }
+            if (index >= 0 && index < size) {
+                inventory.setItem(index, stack);
+            }
+        }
+        return inventory;
+    }
+
     public int getRows() {
         return rows;
     }

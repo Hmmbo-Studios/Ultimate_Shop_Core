@@ -2,8 +2,7 @@ package com.hmmbo.ultimate_Shop_Core.shop.managers;
 
 import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.datatypes.Range;
-import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
-import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplateItemStack;
+import com.hmmbo.ultimate_Shop_Core.shop.template.*;
 import com.hmmbo.ultimate_Shop_Core.utils.ItemUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -68,7 +67,15 @@ public class ShopTemplateManager {
             plugin.getLogger().warning("Unknown shop type '" + typeStr + "' in " + file.getName() + ", defaulting to GUI_SHOP");
             guiType = ShopTemplate.Type.GUI_SHOP;
         }
-        ShopTemplate template = new ShopTemplate(rows, key, inventoryName, guiType);
+
+        ShopTemplate template;
+        if ("buy_sell".equals(fileName)) {
+            template = new BuySellTemplate(rows, key, inventoryName, guiType);
+        } else if (folderName.contains("categories")) {
+            template = new CategoryTemplate(rows, key, inventoryName, guiType);
+        } else {
+            template = new ShopMenuTemplate(rows, key, inventoryName, guiType);
+        }
 
         if (config.isList("items")) {
             List<?> itemList = config.getList("items");
@@ -79,13 +86,6 @@ public class ShopTemplateManager {
 
                     Object typeObj = map.get("type");
                     String itemTypeStr = typeObj == null ? "DECORATION" : typeObj.toString();
-                    ShopTemplateItemStack.Type type;
-                    try {
-                        type = ShopTemplateItemStack.Type.valueOf(itemTypeStr.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        plugin.getLogger().warning("Invalid type in " + fileName + ": " + itemTypeStr);
-                        continue;
-                    }
 
                     ItemStack itemStack;
                     try {
@@ -96,8 +96,11 @@ public class ShopTemplateManager {
                         continue;
                     }
 
+                    double buyPrice = map.containsKey("buy_price") ? Double.parseDouble(map.get("buy_price").toString()) : 0;
+                    double sellPrice = map.containsKey("sell_price") ? Double.parseDouble(map.get("sell_price").toString()) : 0;
+
                     String category = null;
-                    if (type == ShopTemplateItemStack.Type.CATEGORY) {
+                    if ("CATEGORY".equalsIgnoreCase(itemTypeStr)) {
                         Object catObj = map.get("category");
                         if (catObj != null) category = catObj.toString();
                     }
@@ -105,7 +108,7 @@ public class ShopTemplateManager {
                     List<Range> ranges = Range.parseFromObject(map.get("slot"));
                     for (Range range : ranges) {
                         for (int i = range.getStart(); i <= range.getEnd(); i++) {
-                            template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category));
+                            template.addItem(createItem(template, itemTypeStr, itemStack.clone(), i, category, buyPrice, sellPrice));
                         }
                     }
                 }
@@ -115,13 +118,6 @@ public class ShopTemplateManager {
                 String rootPath = "items." + keyItem;
 
                 String itemTypeStr = config.getString(rootPath + ".type", "DECORATION");
-                ShopTemplateItemStack.Type type;
-                try {
-                    type = ShopTemplateItemStack.Type.valueOf(itemTypeStr.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("Invalid type in " + fileName + ": " + itemTypeStr);
-                    continue;
-                }
 
                 ItemStack itemStack;
                 try {
@@ -133,14 +129,17 @@ public class ShopTemplateManager {
                 }
 
                 String category = null;
-                if (type == ShopTemplateItemStack.Type.CATEGORY) {
+                if ("CATEGORY".equalsIgnoreCase(itemTypeStr)) {
                     category = config.getString(rootPath + ".category");
                 }
+
+                double buyPrice = config.contains(rootPath + ".buy_price") ? config.getDouble(rootPath + ".buy_price") : 0;
+                double sellPrice = config.contains(rootPath + ".sell_price") ? config.getDouble(rootPath + ".sell_price") : 0;
 
                 List<Range> ranges = Range.parseFromYaml(config, rootPath + ".slot");
                 for (Range range : ranges) {
                     for (int i = range.getStart(); i <= range.getEnd(); i++) {
-                        template.addItem(new ShopTemplateItemStack(itemStack.clone(), type, i, category));
+                        template.addItem(createItem(template, itemTypeStr, itemStack.clone(), i, category, buyPrice, sellPrice));
                     }
                 }
             }
@@ -150,26 +149,47 @@ public class ShopTemplateManager {
         return template;
     }
 
+    private ShopTemplateItemStack createItem(ShopTemplate template, String typeName, ItemStack stack, int index, String category, double buy, double sell) {
+        try {
+            if (template instanceof BuySellTemplate) {
+                BuySellItemStack.BuySellType t = BuySellItemStack.BuySellType.valueOf(typeName.toUpperCase());
+                return new BuySellItemStack(stack, t, index, buy, sell);
+            } else if (template instanceof CategoryTemplate) {
+                CategoryItemStack.CategoryType t = CategoryItemStack.CategoryType.valueOf(typeName.toUpperCase());
+                return new CategoryItemStack(stack, t, index, buy, sell);
+            } else {
+                ShopMenuItemStack.MenuType t = ShopMenuItemStack.MenuType.valueOf(typeName.toUpperCase());
+                return new ShopMenuItemStack(stack, t, index, category);
+            }
+        } catch (IllegalArgumentException ex) {
+            plugin.getLogger().warning("Unknown item type '" + typeName + "' in template " + template.getName());
+            return new ShopTemplateItemStack(stack, ShopTemplateItemStack.Type.DECORATION, index, category, buy, sell);
+        }
+    }
+
 
 
     private void loadAllTemplates() {
-        File[] folders = templateFolder.listFiles(File::isDirectory);
-        if (folders == null) return;
+        scanFolder("");
+        plugin.getLogger().info("Loaded " + cache.size() + " shop templates.");
+    }
 
-        for (File folder : folders) {
-            File[] files = folder.listFiles((dir, name) -> name.endsWith(".yml"));
-            if (files == null) continue;
-
-            for (File file : files) {
+    private void scanFolder(String path) {
+        File folder = path.isEmpty() ? templateFolder : new File(templateFolder, path);
+        File[] files = folder.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                String sub = path.isEmpty() ? file.getName() : path + "/" + file.getName();
+                scanFolder(sub);
+            } else if (file.getName().endsWith(".yml")) {
                 String yamlName = file.getName().replace(".yml", "");
-                String key = folder.getName() + "/" + yamlName;
+                String key = (path.isEmpty() ? "" : path + "/") + yamlName;
                 if (!cache.containsKey(key)) {
-                    getTemplate(folder.getName(), yamlName);
+                    getTemplate(path, yamlName);
                 }
             }
         }
-
-        plugin.getLogger().info("Loaded " + cache.size() + " shop templates.");
     }
 
 

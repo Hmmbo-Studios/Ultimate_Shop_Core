@@ -28,6 +28,7 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.12'
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.12'
     // Use latest AnvilGUI version compatible with MC 1.17+

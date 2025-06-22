@@ -10,11 +10,15 @@ public class ShopTemplateItemStack {
 
     private static final NamespacedKey TYPE_KEY = new NamespacedKey("ultimate_shop_core", "template_type");
     private static final NamespacedKey CATEGORY_KEY = new NamespacedKey("ultimate_shop_core", "template_category");
+    private static final NamespacedKey BUY_PRICE_KEY = new NamespacedKey("ultimate_shop_core", "buy_price");
+    private static final NamespacedKey SELL_PRICE_KEY = new NamespacedKey("ultimate_shop_core", "sell_price");
 
     private ItemStack itemStack;
     private Type type;
     private int index;
     private String category;
+    private double buyPrice;
+    private double sellPrice;
 
     public enum Type {
         DECORATION,
@@ -23,7 +27,17 @@ public class ShopTemplateItemStack {
         CLOSE,
         BACK,
         SHOP_ITEM,
-        CATEGORY;
+        CATEGORY,
+        ADD1,
+        ADD16,
+        ADD32,
+        ADD64,
+        BUY,
+        SELL,
+        BUY_STACK,
+        SELL_STACK,
+        INPUT,
+        CHANGE_MODE;
 
         public static Type fromString(String s) {
             try {
@@ -35,18 +49,24 @@ public class ShopTemplateItemStack {
     }
 
     public ShopTemplateItemStack(ItemStack itemStack, Type type, int index) {
-        this(itemStack, type, index, null);
+        this(itemStack, type, index, null, 0, 0);
     }
 
     public ShopTemplateItemStack(ItemStack itemStack, Type type, int index, String category) {
+        this(itemStack, type, index, category, 0, 0);
+    }
+
+    public ShopTemplateItemStack(ItemStack itemStack, Type type, int index, String category, double buyPrice, double sellPrice) {
         this.itemStack = itemStack;
         this.type = type;
         this.index = index;
         this.category = category;
-        storeTypeAndCategory(itemStack, type, category);
+        this.buyPrice = buyPrice;
+        this.sellPrice = sellPrice;
+        storeTypeAndCategory(itemStack, type, category, buyPrice, sellPrice);
     }
 
-    private void storeTypeAndCategory(ItemStack item, Type type, String category) {
+    private void storeTypeAndCategory(ItemStack item, Type type, String category, double buy, double sell) {
         if (item == null || type == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
@@ -55,6 +75,8 @@ public class ShopTemplateItemStack {
         if (category != null) {
             meta.getPersistentDataContainer().set(CATEGORY_KEY, PersistentDataType.STRING, category);
         }
+        if (buy > 0) meta.getPersistentDataContainer().set(BUY_PRICE_KEY, PersistentDataType.DOUBLE, buy);
+        if (sell > 0) meta.getPersistentDataContainer().set(SELL_PRICE_KEY, PersistentDataType.DOUBLE, sell);
         item.setItemMeta(meta);
     }
 
@@ -81,13 +103,33 @@ public class ShopTemplateItemStack {
         return null;
     }
 
+    public static double extractBuyPrice(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return 0;
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (container.has(BUY_PRICE_KEY, PersistentDataType.DOUBLE)) {
+            return container.get(BUY_PRICE_KEY, PersistentDataType.DOUBLE);
+        }
+        return 0;
+    }
+
+    public static double extractSellPrice(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return 0;
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (container.has(SELL_PRICE_KEY, PersistentDataType.DOUBLE)) {
+            return container.get(SELL_PRICE_KEY, PersistentDataType.DOUBLE);
+        }
+        return 0;
+    }
+
     public ItemStack getItemStack() {
         return itemStack;
     }
 
     public void setItemStack(ItemStack itemStack) {
         this.itemStack = itemStack;
-        storeTypeAndCategory(itemStack, this.type, this.category); // re-store data
+        storeTypeAndCategory(itemStack, this.type, this.category, this.buyPrice, this.sellPrice); // re-store data
     }
 
     public Type getType() {
@@ -96,7 +138,7 @@ public class ShopTemplateItemStack {
 
     public void setType(Type type) {
         this.type = type;
-        storeTypeAndCategory(this.itemStack, type, this.category); // re-store data
+        storeTypeAndCategory(this.itemStack, type, this.category, this.buyPrice, this.sellPrice); // re-store data
     }
 
     public int getIndex() {
@@ -113,6 +155,14 @@ public class ShopTemplateItemStack {
 
     public void setCategory(String category) {
         this.category = category;
-        storeTypeAndCategory(this.itemStack, this.type, category);
+        storeTypeAndCategory(this.itemStack, this.type, category, this.buyPrice, this.sellPrice);
+    }
+
+    public double getBuyPrice() {
+        return buyPrice;
+    }
+
+    public double getSellPrice() {
+        return sellPrice;
     }
 }
