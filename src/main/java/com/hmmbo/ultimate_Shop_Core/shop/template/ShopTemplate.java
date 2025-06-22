@@ -14,6 +14,7 @@ public class ShopTemplate {
     private final String name;
     private final String inventoryName;
     private final List<ShopTemplateItemStack> items;
+    private boolean hasChangeMode = false;
     public enum Type {
         GUI_SHOP,
         AUCTION,
@@ -38,10 +39,17 @@ public class ShopTemplate {
 
     public void addItem(ShopTemplateItemStack item) {
         items.add(item);
+        if (item.getType() == ShopTemplateItemStack.Type.CHANGE_MODE) {
+            hasChangeMode = true;
+        }
     }
 
     public List<ShopTemplateItemStack> getItems() {
         return items;
+    }
+
+    public boolean hasChangeMode() {
+        return hasChangeMode;
     }
 
     public Inventory createInventory() {
@@ -67,7 +75,7 @@ public class ShopTemplate {
         for (ShopTemplateItemStack templateItem : items) {
             int index = templateItem.getIndex();
             ItemStack stack = templateItem.getItemStack();
-            if (templateItem.getType() == ShopTemplateItemStack.Type.SHOP_ITEM && dynamicItem != null) {
+            if (dynamicItem != null && (templateItem.getType() == ShopTemplateItemStack.Type.SHOP_ITEM || templateItem.isDynamicItem())) {
                 stack = dynamicItem.clone();
             }
             if (index >= 0 && index < size) {
