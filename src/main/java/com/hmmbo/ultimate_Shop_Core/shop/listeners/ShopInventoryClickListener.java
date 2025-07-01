@@ -1,7 +1,7 @@
 package com.hmmbo.ultimate_Shop_Core.shop.listeners;
 
-import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
-import com.hmmbo.ultimate_Shop_Core.datatypes.Custom_Inventory;
+import com.hmmbo.ultimate_Shop_Core.UltimateShopCore;
+import com.hmmbo.ultimate_Shop_Core.datatypes.CustomInventory;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplateItemStack;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
@@ -14,13 +14,16 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ShopMenuListener implements Listener {
+/**
+ * Handles inventory click interactions for the shop menus.
+ */
+public class ShopInventoryClickListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inv = event.getInventory();
 
-        if (inv.getHolder() instanceof Custom_Inventory shopHolder) {
+        if (inv.getHolder() instanceof CustomInventory shopHolder) {
             if (event.getCurrentItem() == null) {
                 event.setCancelled(true);
                 return;
@@ -52,7 +55,7 @@ public class ShopMenuListener implements Listener {
                     ShopTemplate bs = ShopTemplateManager.get().getTemplate(folder, "buy_sell");
                     if (bs != null) {
                         Inventory newInv = bs.createInventory(clicked, buy, sell);
-                        Custom_Inventory newHolder = (Custom_Inventory) newInv.getHolder();
+                        CustomInventory newHolder = (CustomInventory) newInv.getHolder();
                         applyMode(newInv, newHolder.isStackMode(), bs.hasChangeMode());
                         updateAmountDisplay(newInv, bs, clicked, newHolder.getAmount());
                         player.openInventory(newInv);
@@ -77,7 +80,7 @@ public class ShopMenuListener implements Listener {
                 case CHANGE_MODE -> {
                     boolean mode = shopHolder.toggleStackMode();
                     Inventory newInv = template.createInventory(shopHolder.getDynamicItem(), shopHolder.getBuyPrice(), shopHolder.getSellPrice());
-                    Custom_Inventory newHolder = (Custom_Inventory) newInv.getHolder();
+                    CustomInventory newHolder = (CustomInventory) newInv.getHolder();
                     newHolder.setAmount(shopHolder.getAmount());
                     newHolder.setStackMode(mode);
                     applyMode(newInv, mode, template.hasChangeMode());
@@ -94,7 +97,7 @@ public class ShopMenuListener implements Listener {
                             player.sendMessage("Invalid amount");
                         }
                         Inventory newInv = template.createInventory(shopHolder.getDynamicItem(), shopHolder.getBuyPrice(), shopHolder.getSellPrice());
-                        Custom_Inventory newHolder = (Custom_Inventory) newInv.getHolder();
+                        CustomInventory newHolder = (CustomInventory) newInv.getHolder();
                         newHolder.setAmount(shopHolder.getAmount());
                         newHolder.setStackMode(shopHolder.isStackMode());
                         applyMode(newInv, newHolder.isStackMode(), template.hasChangeMode());
@@ -103,10 +106,10 @@ public class ShopMenuListener implements Listener {
                     });
                 }
                 case BUY -> {
-                    if (Ultimate_Shop_Core.economy != null) {
+                    if (UltimateShopCore.economy != null) {
                         double cost = shopHolder.getBuyPrice() * shopHolder.getAmount();
-                        if (Ultimate_Shop_Core.economy.getBalance(player) >= cost) {
-                            Ultimate_Shop_Core.economy.withdrawPlayer(player, cost);
+                        if (UltimateShopCore.economy.getBalance(player) >= cost) {
+                            UltimateShopCore.economy.withdrawPlayer(player, cost);
                             ItemStack item = shopHolder.getDynamicItem().clone();
                             item.setAmount(shopHolder.getAmount());
                             player.getInventory().addItem(item);
@@ -117,11 +120,11 @@ public class ShopMenuListener implements Listener {
                     }
                 }
                 case BUY_STACK -> {
-                    if (Ultimate_Shop_Core.economy != null) {
+                    if (UltimateShopCore.economy != null) {
                         int amt = 64;
                         double cost = shopHolder.getBuyPrice() * amt;
-                        if (Ultimate_Shop_Core.economy.getBalance(player) >= cost) {
-                            Ultimate_Shop_Core.economy.withdrawPlayer(player, cost);
+                        if (UltimateShopCore.economy.getBalance(player) >= cost) {
+                            UltimateShopCore.economy.withdrawPlayer(player, cost);
                             ItemStack item = shopHolder.getDynamicItem().clone();
                             item.setAmount(amt);
                             player.getInventory().addItem(item);
@@ -137,8 +140,8 @@ public class ShopMenuListener implements Listener {
                     if (player.getInventory().containsAtLeast(check, amt)) {
                         player.getInventory().removeItem(check);
                         double gain = shopHolder.getSellPrice() * amt;
-                        if (Ultimate_Shop_Core.economy != null) {
-                            Ultimate_Shop_Core.economy.depositPlayer(player, gain);
+                        if (UltimateShopCore.economy != null) {
+                            UltimateShopCore.economy.depositPlayer(player, gain);
                         }
                         player.sendMessage("You sold " + amt + " " + check.getType() + " for $" + gain);
                     } else {
@@ -151,8 +154,8 @@ public class ShopMenuListener implements Listener {
                     if (player.getInventory().containsAtLeast(check, amt)) {
                         player.getInventory().removeItem(check);
                         double gain = shopHolder.getSellPrice() * amt;
-                        if (Ultimate_Shop_Core.economy != null) {
-                            Ultimate_Shop_Core.economy.depositPlayer(player, gain);
+                        if (UltimateShopCore.economy != null) {
+                            UltimateShopCore.economy.depositPlayer(player, gain);
                         }
                         player.sendMessage("You sold " + amt + " " + check.getType() + " for $" + gain);
                     } else {
@@ -262,7 +265,7 @@ public class ShopMenuListener implements Listener {
         }
     }
 
-    private void adjustAmount(Inventory inv, Custom_Inventory holder, ShopTemplate template, int delta) {
+    private void adjustAmount(Inventory inv, CustomInventory holder, ShopTemplate template, int delta) {
         holder.addAmount(delta);
         updateAmountDisplay(inv, template, holder.getDynamicItem(), holder.getAmount());
     }

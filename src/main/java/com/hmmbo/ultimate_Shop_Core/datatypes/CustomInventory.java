@@ -4,7 +4,10 @@ import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-public class Custom_Inventory implements InventoryHolder {
+/**
+ * Holder for dynamic inventory instances used by shop GUIs.
+ */
+public class CustomInventory implements InventoryHolder {
 
     private final ShopTemplate template;
     private final org.bukkit.inventory.ItemStack dynamicItem;
@@ -13,11 +16,11 @@ public class Custom_Inventory implements InventoryHolder {
     private int amount = 1;
     private boolean stackMode = false;
 
-    public Custom_Inventory(ShopTemplate template) {
+    public CustomInventory(ShopTemplate template) {
         this(template, null, 0, 0);
     }
 
-    public Custom_Inventory(ShopTemplate template, org.bukkit.inventory.ItemStack item, double buyPrice, double sellPrice) {
+    public CustomInventory(ShopTemplate template, org.bukkit.inventory.ItemStack item, double buyPrice, double sellPrice) {
         this.template = template;
         this.dynamicItem = item;
         this.buyPrice = buyPrice;
