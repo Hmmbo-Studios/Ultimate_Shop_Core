@@ -1,5 +1,5 @@
 name: Ultimate_Shop_Core
 version: '1.0-SNAPSHOT'
-main: com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core
+main: com.hmmbo.ultimate_Shop_Core.UltimateShopCore
 api-version: '1.21'
-depend: [Vault, ProtocolLib]
+depend: [Vault, PacketEvents]

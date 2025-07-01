@@ -1,6 +1,6 @@
 package com.hmmbo.ultimate_Shop_Core;
 
-import com.hmmbo.ultimate_Shop_Core.shop.listeners.ShopMenuListener;
+import com.hmmbo.ultimate_Shop_Core.shop.listeners.ShopInventoryClickListener;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
 import com.hmmbo.ultimate_Shop_Core.utils.commands.ShopCommand;
 import com.hmmbo.ultimate_Shop_Core.utils.sign.SignInput;
@@ -12,7 +12,10 @@ import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
-public final class Ultimate_Shop_Core extends JavaPlugin {
+/**
+ * Main plugin entry.
+ */
+public final class UltimateShopCore extends JavaPlugin {
 
     public static Plugin instance;
     public static Economy economy;
@@ -39,7 +42,7 @@ public final class Ultimate_Shop_Core extends JavaPlugin {
         SignInput.init(this);
 
         // Listeners
-        Bukkit.getPluginManager().registerEvents(new ShopMenuListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ShopInventoryClickListener(), this);
 
     }
 

@@ -1,6 +1,6 @@
 package com.hmmbo.ultimate_Shop_Core.shop.template;
 
-import com.hmmbo.ultimate_Shop_Core.datatypes.Custom_Inventory;
+import com.hmmbo.ultimate_Shop_Core.datatypes.CustomInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +55,7 @@ public class ShopTemplate {
     public Inventory createInventory() {
         int size = rows * 9;
         String title = inventoryName != null ? inventoryName : name;
-        Inventory inventory = Bukkit.createInventory(new Custom_Inventory(this), size, title);
+        Inventory inventory = Bukkit.createInventory(new CustomInventory(this), size, title);
         for (ShopTemplateItemStack templateItem : items) {
             int index = templateItem.getIndex();
             ItemStack stack = templateItem.getItemStack();
@@ -71,7 +71,7 @@ public class ShopTemplate {
     public Inventory createInventory(ItemStack dynamicItem, double buyPrice, double sellPrice) {
         int size = rows * 9;
         String title = inventoryName != null ? inventoryName : name;
-        Inventory inventory = Bukkit.createInventory(new Custom_Inventory(this, dynamicItem, buyPrice, sellPrice), size, title);
+        Inventory inventory = Bukkit.createInventory(new CustomInventory(this, dynamicItem, buyPrice, sellPrice), size, title);
         for (ShopTemplateItemStack templateItem : items) {
             int index = templateItem.getIndex();
             ItemStack stack = templateItem.getItemStack();

@@ -26,6 +26,9 @@ repositories {
     }
     maven { url "https://repo.dmulloy2.net/repository/public/" }
     maven { url 'https://jitpack.io' }
+    maven {
+        url 'https://repo.retrooper.dev/repository/maven-public/'
+    }
 }
 
 dependencies {
@@ -33,7 +36,7 @@ dependencies {
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.12'
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.12'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
+    implementation 'com.github.retrooper.packetevents:packetevents-bukkit:2.0.2'
 }
 
 def targetJavaVersion = 17
