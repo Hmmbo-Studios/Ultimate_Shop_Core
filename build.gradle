@@ -26,17 +26,19 @@ repositories {
     }
     maven { url "https://repo.dmulloy2.net/repository/public/" }
     maven { url 'https://jitpack.io' }
-    maven {
-        url 'https://repo.retrooper.dev/repository/maven-public/'
-    }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+    compileOnly("com.github.retrooper:packetevents-spigot:2.8.0")
+
     implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.12'
     implementation 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.12'
-    implementation 'com.github.retrooper.packetevents:packetevents-bukkit:2.0.2'
+
 }
 
 def targetJavaVersion = 17
@@ -66,7 +68,7 @@ tasks {
         archiveClassifier = ""
         // Relocate only Lamp
         relocate "io.github.revxrsal.lamp", "com.hmmbo.shaded.lamp"
-
+        exclude("com.github.retrooper:packetevents-spigot:2.8.0")
         // No special dependency relocations
     }
 

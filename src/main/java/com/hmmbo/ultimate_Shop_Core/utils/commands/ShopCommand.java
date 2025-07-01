@@ -1,7 +1,7 @@
 package com.hmmbo.ultimate_Shop_Core.utils.commands;
 
 
-import com.hmmbo.ultimate_Shop_Core.UltimateShopCore;
+import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,7 @@ public class ShopCommand {
 
     @Command("shop")
     public void onShopCommand(BukkitCommandActor sender) {
-        String template = UltimateShopCore.instance.getConfig().getString("shop_template", "default");
+        String template = Ultimate_Shop_Core.instance.getConfig().getString("shop_template", "default");
         ShopTemplate shop = ShopTemplateManager.get().getTemplate(template, "shop");
         if (shop != null) {
             sender.asPlayer().openInventory(shop.createInventory());
@@ -28,8 +28,8 @@ public class ShopCommand {
     @Command("shop admin change_template")
     @CommandPermission("usc.admin")
     public void changeTemplate(BukkitCommandActor sender, String name) {
-        UltimateShopCore.instance.getConfig().set("shop_template", name);
-        UltimateShopCore.instance.saveConfig();
+        Ultimate_Shop_Core.instance.getConfig().set("shop_template", name);
+        Ultimate_Shop_Core.instance.saveConfig();
         sender.asPlayer().sendMessage("Shop template changed to " + name + ".");
     }
 

@@ -1,7 +1,8 @@
 package com.hmmbo.ultimate_Shop_Core.shop.listeners;
 
-import com.hmmbo.ultimate_Shop_Core.UltimateShopCore;
+import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.datatypes.CustomInventory;
+import com.hmmbo.ultimate_Shop_Core.shop.template.BuySellTemplate;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplate;
 import com.hmmbo.ultimate_Shop_Core.shop.template.ShopTemplateItemStack;
 import com.hmmbo.ultimate_Shop_Core.shop.managers.ShopTemplateManager;
@@ -88,6 +89,7 @@ public class ShopInventoryClickListener implements Listener {
                     player.openInventory(newInv);
                 }
                 case INPUT -> {
+                    SignInput.init();
                     SignInput.open(player, lines -> {
                         if (lines.length == 0) return;
                         try {
@@ -106,10 +108,10 @@ public class ShopInventoryClickListener implements Listener {
                     });
                 }
                 case BUY -> {
-                    if (UltimateShopCore.economy != null) {
+                    if (Ultimate_Shop_Core.economy != null) {
                         double cost = shopHolder.getBuyPrice() * shopHolder.getAmount();
-                        if (UltimateShopCore.economy.getBalance(player) >= cost) {
-                            UltimateShopCore.economy.withdrawPlayer(player, cost);
+                        if (Ultimate_Shop_Core.economy.getBalance(player) >= cost) {
+                            Ultimate_Shop_Core.economy.withdrawPlayer(player, cost);
                             ItemStack item = shopHolder.getDynamicItem().clone();
                             item.setAmount(shopHolder.getAmount());
                             player.getInventory().addItem(item);
@@ -120,11 +122,11 @@ public class ShopInventoryClickListener implements Listener {
                     }
                 }
                 case BUY_STACK -> {
-                    if (UltimateShopCore.economy != null) {
+                    if (Ultimate_Shop_Core.economy != null) {
                         int amt = 64;
                         double cost = shopHolder.getBuyPrice() * amt;
-                        if (UltimateShopCore.economy.getBalance(player) >= cost) {
-                            UltimateShopCore.economy.withdrawPlayer(player, cost);
+                        if (Ultimate_Shop_Core.economy.getBalance(player) >= cost) {
+                            Ultimate_Shop_Core.economy.withdrawPlayer(player, cost);
                             ItemStack item = shopHolder.getDynamicItem().clone();
                             item.setAmount(amt);
                             player.getInventory().addItem(item);
@@ -140,8 +142,8 @@ public class ShopInventoryClickListener implements Listener {
                     if (player.getInventory().containsAtLeast(check, amt)) {
                         player.getInventory().removeItem(check);
                         double gain = shopHolder.getSellPrice() * amt;
-                        if (UltimateShopCore.economy != null) {
-                            UltimateShopCore.economy.depositPlayer(player, gain);
+                        if (Ultimate_Shop_Core.economy != null) {
+                            Ultimate_Shop_Core.economy.depositPlayer(player, gain);
                         }
                         player.sendMessage("You sold " + amt + " " + check.getType() + " for $" + gain);
                     } else {
@@ -154,8 +156,8 @@ public class ShopInventoryClickListener implements Listener {
                     if (player.getInventory().containsAtLeast(check, amt)) {
                         player.getInventory().removeItem(check);
                         double gain = shopHolder.getSellPrice() * amt;
-                        if (UltimateShopCore.economy != null) {
-                            UltimateShopCore.economy.depositPlayer(player, gain);
+                        if (Ultimate_Shop_Core.economy != null) {
+                            Ultimate_Shop_Core.economy.depositPlayer(player, gain);
                         }
                         player.sendMessage("You sold " + amt + " " + check.getType() + " for $" + gain);
                     } else {
@@ -271,7 +273,12 @@ public class ShopInventoryClickListener implements Listener {
     }
 
     private void updateAmountDisplay(Inventory inv, ShopTemplate template, ItemStack dynamicItem, int amount) {
-        if (dynamicItem == null || !(template instanceof ShopTemplate)) return;
+        if (dynamicItem == null || template == null){
+            System.out.println("Something NULL");
+            return;
+        }
+
+
         for (ShopTemplateItemStack tItem : template.getItems()) {
             if (tItem.isDynamicItem()) {
                 ItemStack clone = dynamicItem.clone();

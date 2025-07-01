@@ -1,6 +1,6 @@
 package com.hmmbo.ultimate_Shop_Core.shop.managers;
 
-import com.hmmbo.ultimate_Shop_Core.UltimateShopCore;
+import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import com.hmmbo.ultimate_Shop_Core.datatypes.Range;
 import com.hmmbo.ultimate_Shop_Core.shop.template.*;
 import com.hmmbo.ultimate_Shop_Core.utils.ItemUtil;
@@ -20,7 +20,7 @@ public class ShopTemplateManager {
     public static final HashMap<String, ShopTemplate> cache = new HashMap<>();
     private static ShopTemplateManager instance;
 
-    public ShopTemplateManager(UltimateShopCore plugin) {
+    public ShopTemplateManager(Ultimate_Shop_Core plugin) {
         this.plugin = plugin;
         this.templateFolder = new File(plugin.getDataFolder(), "templates");
 

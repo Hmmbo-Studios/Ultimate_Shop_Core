@@ -1,12 +1,10 @@
+// File: SignInput.java
 package com.hmmbo.ultimate_Shop_Core.utils.sign;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.event.PacketListener;
-import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUpdateSign;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenSignEditor;
-import com.hmmbo.ultimate_Shop_Core.UltimateShopCore;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.hmmbo.ultimate_Shop_Core.Ultimate_Shop_Core;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -17,48 +15,52 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * Utility for prompting players with a sign editor and retrieving the input.
- * Uses PacketEvents for minimal packet handling.
+ * Utility for prompting players with a virtual sign editor
+ * (no block placed) and retrieving the input via callback.
  */
 public class SignInput {
     private static final Map<UUID, Consumer<String[]>> callbacks = new ConcurrentHashMap<>();
-    private static boolean registered = false;
+    private static boolean initialized = false;
 
-    /**
-     * Initialise the packet listener. Call this once in plugin onEnable.
-     */
-    public static void init(Plugin plugin) {
-        if (registered) return;
-
-        PacketEvents.getAPI().getEventManager().registerListener(new PacketListener() {
-            @Override
-            public void onPacketReceive(PacketReceiveEvent event) {
-                if (event.getPacketType() != PacketType.Play.Client.UPDATE_SIGN) return;
-                Player player = (Player) event.getPlayer();
-                Consumer<String[]> cb = callbacks.remove(player.getUniqueId());
-                if (cb != null) {
-                    WrapperPlayClientUpdateSign wrapper = new WrapperPlayClientUpdateSign(event);
-                    cb.accept(wrapper.getLines());
-                    event.setCancelled(true);
-                }
-            }
-        });
-        registered = true;
+    // Called by SignPacketListener to fetch & remove the pending callback
+    static Consumer<String[]> removeCallback(UUID uuid) {
+        return callbacks.remove(uuid);
     }
 
     /**
-     * Opens a sign editor for the player. The callback is invoked with the entered lines.
+     * Registers the SignPacketListener. Call once in your plugin's onEnable().
+     */
+    public static void init() {
+        if (initialized) return;
+        PacketEvents.getAPI()
+                .getEventManager()
+                .registerListener(new SignPacketListener());
+        initialized = true;
+    }
+
+    /**
+     * Opens a "virtual" sign editor for the player (no block is actually placed).
+     * Once the player submits, the provided callback will be invoked with the four lines of text.
      */
     public static void open(Player player, Consumer<String[]> callback) {
-        if (!registered) {
-            init(UltimateShopCore.instance);
+        if (!initialized) {
+            init();
         }
 
-        // Use an off-screen position so no sign block is shown to the player.
-        Location loc = new Location(player.getWorld(), 0, 0, 0);
-        WrapperPlayServerOpenSignEditor packet = new WrapperPlayServerOpenSignEditor(loc);
-        PacketEvents.getAPI().getServerManager().sendPacket(player, packet);
-
+        // Store the callback before sending the packet to avoid races
         callbacks.put(player.getUniqueId(), callback);
+
+        // Use an off-screen location so no sign is visible in-world
+        Location loc = player.getLocation().add(0, 256, 0);
+        Vector3i position = new Vector3i(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+
+        // 'true' means editing the front text of the sign
+        WrapperPlayServerOpenSignEditor packet =
+                new WrapperPlayServerOpenSignEditor(position, true);
+
+        // Send via PlayerManager instead of the removed ServerManager.sendPacket
+        PacketEvents.getAPI()
+                .getPlayerManager()
+                .sendPacket(player, packet);
     }
 }

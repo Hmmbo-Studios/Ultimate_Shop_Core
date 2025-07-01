@@ -15,7 +15,7 @@ import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 /**
  * Main plugin entry.
  */
-public final class UltimateShopCore extends JavaPlugin {
+public final class Ultimate_Shop_Core extends JavaPlugin {
 
     public static Plugin instance;
     public static Economy economy;
@@ -39,7 +39,7 @@ public final class UltimateShopCore extends JavaPlugin {
 
         //Managers
         new ShopTemplateManager(this);
-        SignInput.init(this);
+        SignInput.init();
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new ShopInventoryClickListener(), this);
